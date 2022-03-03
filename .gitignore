@@ -1,0 +1,13 @@
+.metadata
+.settings
+.classpath
+.xlsx
+.project
+push.bat
+*.cbp
+*.layout
+*.depend
+*.exe
+.vs/
+bin/
+obj/
