@@ -16,7 +16,5 @@ public class beibao01 {
 			}
 		}
 		System.out.println(f[4][8]);
-		
-		
 	}
 }
