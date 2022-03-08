@@ -4,18 +4,36 @@ import java.util.Scanner;
 
 public class dfs_daifenshu {
 	static int sum=0;
-	static int []st=new int[10];
-	static int []ans=new int[10];
+	static int n;
+	static int []st=new int[30];
+	static int []ans=new int[30];
 	public static void dfs(int x) {
 		if(x>9) {
-			for(int i=1;i<=2;i++) {
-				for(int j=7;j<=9;j++) {
-					int a=i,b=j;
-					for(int k=1;k<i;k++) {
+//			for(int i=1;i<=9;i++) {
+//				System.out.printf("%5d",ans[i]);
+//			}
+//			System.out.println();
+			for(int i=1;i<=7;i++) {
+				for(int j=i+1;j<=8;j++) {
+					int a=0,b=0,c=0;
+					for(int k=1;k<=i;k++) {
 						a*=10;
-						a+=ans[k+1];
+						a+=ans[k];
 					}
-					for(int k=j;)
+					for(int k=i+1;k<=j;k++) {
+						b*=10;
+						b+=ans[k];
+					}
+					for(int k=j+1;k<=9;k++) {
+						c*=10;
+						c+=ans[k];
+					}
+					if(b%c!=0) {
+						continue;
+					}
+					if((a+b/c)==n) {
+						sum++;
+					}
 				}
 			}
 			return;
@@ -31,7 +49,8 @@ public class dfs_daifenshu {
 	}
 	public static void main(String[] args) {
 		Scanner sc=new Scanner(System.in);
-		dfs(sc.nextInt());
+		n=sc.nextInt();
+		dfs(1);
 		System.out.println(sum);
 	}
 }
