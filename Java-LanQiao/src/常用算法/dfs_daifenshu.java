@@ -19,7 +19,7 @@ public class dfs_daifenshu {
 					for(int k=1;k<=i;k++) {
 						a*=10;
 						a+=ans[k];
-					}
+					} 
 					for(int k=i+1;k<=j;k++) {
 						b*=10;
 						b+=ans[k];

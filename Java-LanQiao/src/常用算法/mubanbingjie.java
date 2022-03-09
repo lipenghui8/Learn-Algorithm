@@ -19,13 +19,15 @@ public class mubanbingjie {
 		if(lenn==len) {
 			return dfs(num+1,0,n);
 		}
+		int last=0;
 		for(int i=start;i!=0;i--) {//从大到小开始枚举
-			if(st[i]==0&&lenn+s[i]<=len) {
+			if(s[i]!=last&&st[i]==0&&lenn+s[i]<=len) {
 				st[i]=1;
 				lenn+=s[i];
 				if(dfs(num,lenn,i-1)) {
 					return true;
 				}
+				last=s[i];
 				st[i]=0;
 			}
 		}
