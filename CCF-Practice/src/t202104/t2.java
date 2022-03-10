@@ -25,16 +25,22 @@ public class t2 {
 				if(x1<1)x1=1;
 				int y1=j-r-1;
 				if(y1<1)y1=1;
-				int k=s[i+r][j+r]-s[x1][j+r]-s[i+r][y1]+s[x1][y1];
+				
+				int x2=i+r;
+				int y2=j+r;
+				
+				if(x2>n)x2=n;
+				if(y2>n)y2=n;
+				int k=s[x2][y2]-s[x1][y2]-s[x2][y1]+s[x1][y1];
 				if(k<=r)sum++;
 			}
 		}
 		System.out.println(sum);
-		for(int i=1;i<=n;i++) {
-			for(int j=1;j<=n;j++) {
-				System.out.print(s[i][j]+" ");
-			}
-			System.out.println();
-		}
+//		for(int i=1;i<=n;i++) {
+//			for(int j=1;j<=n;j++) {
+//				System.out.print(s[i][j]+" ");
+//			}
+//			System.out.println();
+//		}
 	}
 }
