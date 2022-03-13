@@ -19,6 +19,8 @@ public class t2 {
 		for(int i=1;i<=max;i++) {
 			s[i]+=s[i-1];
 		}
-		
+		for(int i=1;i<=max;i++) {
+			
+		}
 	}
 }
