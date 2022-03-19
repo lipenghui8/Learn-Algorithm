@@ -10,7 +10,7 @@ public class 海底高铁 {
 		int n=sc.nextInt(),m=sc.nextInt();
 		int x,y;
 		x=sc.nextInt();
-		for(int i=2;i<=m;i++) {
+		for(int i=2;i<=m;i++) { 
 			y=sc.nextInt();
 			if(x>y) {
 				b[x]--;

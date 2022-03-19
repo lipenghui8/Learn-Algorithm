@@ -27,6 +27,5 @@ public class 地毯 {
 			}
 			System.out.println();
 		}
-		
 	}
 }
