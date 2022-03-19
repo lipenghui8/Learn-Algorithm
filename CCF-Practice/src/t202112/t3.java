@@ -28,7 +28,7 @@ public class t3 {
 			j++;
 		}
 		if(len%2==1) {
-			c[j]=900;
+			c[j]=b[len-1]*30+29;
 		}
 		int nc=(int) Math.ceil(len/1.0/2);
 		System.out.println(w);
