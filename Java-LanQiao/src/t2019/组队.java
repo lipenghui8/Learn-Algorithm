@@ -1,9 +1,6 @@
 package t2019;
 
 import java.util.Scanner;
-
-import org.jcp.xml.dsig.internal.dom.ApacheTransform;
-
 public class 组队 {
 	static int max=Integer.MIN_VALUE;
 	static int[] ans=new int[30];
