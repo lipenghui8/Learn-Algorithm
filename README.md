@@ -257,3 +257,7 @@ public class mubanbingjie {
 ## 6、BFS解决迷宫问题
 
 <img src="https://gitee.com/lipenghuihenu/picgo-image/raw/master/image-20220323211519312.png" style="zoom:67%;" />
+
+BFS代码框架：
+
+<img src="https://gitee.com/lipenghuihenu/picgo-image/raw/master/image-20220324193614332.png" alt="image-20220324193614332" style="zoom:67%;" />
