@@ -55,13 +55,6 @@ public class bfs_全球变暖 {
 				aa[i][j]=aaString.charAt(j-1);
 			}
 		}
-//		System.out.println(n);
-//		for(int i=1;i<=n;i++) {
-//			for(int j=1;j<=n;j++) {
-//				System.out.print(aa[i][j]);
-//			}
-//			System.out.println();
-//		}
 		for(int i=1;i<=n;i++) {
 			for(int j=1;j<=n;j++) {
 				if(aa[i][j]=='#'&&v[i][j]==0) {

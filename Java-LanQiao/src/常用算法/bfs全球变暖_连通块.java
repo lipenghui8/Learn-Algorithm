@@ -13,7 +13,7 @@ import java.util.Scanner;
 //	}
 //}
 
-public class bfs全球变暖 {
+public class bfs全球变暖_连通块 {
 	static char[][] a=new char[1010][1010];
 	static int[][] v=new int[1010][1010];
 	static Queue<node> queue=new LinkedList<>();

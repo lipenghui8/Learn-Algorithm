@@ -6,6 +6,11 @@ import java.util.Scanner;
 
 class point{
 	int x,y,step;
+	point(int x,int y,int step){
+		this.x=x;
+		this.y=y;
+		this.step=step;
+	}
 }
 
 public class 迷宫BFS {
@@ -29,10 +34,7 @@ public class 迷宫BFS {
 			}
 		}
 		//初始化起点和起点的访问数组并加入队列
-		point start=new point();
-		start.x=1;
-		start.y=1;
-		start.step=0;
+		point start=new point(1,1,0);
 		v[1][1]=1;
 		Q.add(start);
 		
@@ -55,37 +57,25 @@ public class 迷宫BFS {
 			//下
 			if(a[x+1][y]==0&&v[x+1][y]==0) {
 				v[x+1][y]=1;
-				point rPoint=new point();
-				rPoint.x=x+1;
-				rPoint.y=y;
-				rPoint.step=step+1;
+				point rPoint=new point(x+1,y,step+1);
 				Q.add(rPoint);
 			}
 			//左
 			if(a[x][y-1]==0&&v[x][y-1]==0) {
 				v[x][y-1]=1;
-				point rPoint=new point();
-				rPoint.x=x;
-				rPoint.y=y-1;
-				rPoint.step=step+1;
+				point rPoint=new point(x,y-1,step+1);
 				Q.add(rPoint);
 			}
 			//右
 			if(a[x][y+1]==0&&v[x][y+1]==0) {
 				v[x][y+1]=1;
-				point rPoint=new point();
-				rPoint.x=x;
-				rPoint.y=y+1;
-				rPoint.step=step+1;
+				point rPoint=new point(x,y+1,step+1);
 				Q.add(rPoint);
 			}
 			//上
 			if(a[x-1][y]==0&&v[x-1][y]==0) {
 				v[x-1][y]=1;
-				point rPoint=new point();
-				rPoint.x=x-1;
-				rPoint.y=y;
-				rPoint.step=step+1;
+				point rPoint=new point(x-1,y,step+1);
 				Q.add(rPoint);
 			}
 			Q.remove();
