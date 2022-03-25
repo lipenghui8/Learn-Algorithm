@@ -254,7 +254,7 @@ public class mubanbingjie {
 
 <img src="https://gitee.com/lipenghuihenu/picgo-image/raw/master/image-20220318195138772.png" alt="image-20220318195138772" style="zoom:67%;" />
 
-## 6、BFS解决迷宫问题
+## 6、BFS（常用于最短路径和求连通块问题）
 
 <img src="https://gitee.com/lipenghuihenu/picgo-image/raw/master/image-20220323211519312.png" style="zoom:67%;" />
 
