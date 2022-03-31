@@ -30,27 +30,15 @@ public class 递增三元组 {
 		Arrays.sort(a);
 		Arrays.sort(b);
 		Arrays.sort(c);
-//		for(int i=1;i<=n;i++) {
-//			for(int j=1;j<=n;j++) {
-//				if(b[j]>a[i]) {
-//					for(int k=1;k<=n;k++) {
-//						if(c[k]>b[j]) {
-//							sum+=n-k+1;
-//							break;
-//						}
-//					}
-//				}
-//			}
-//		}
 		for(int i=0;i<n;i++) {
 			int p=0,q=0;
-			while(a[p]<b[i]&&p<n) {
+			while(p<n&&a[p]<b[i]) {
 				p++;
 			};
-			while(c[q]<=b[i]&&q<n) {
+			while(q<n&&c[q]<=b[i]) {
 				q++;
 			}
-			sum+=1l*(p)*(n-q);
+			sum+=1L*(p)*(n-q);
 		}
 		System.out.println(sum);
 	}
