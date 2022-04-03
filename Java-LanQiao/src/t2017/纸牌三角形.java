@@ -1,6 +1,6 @@
 package t2017;
 
-public class 购物单 {
+public class 纸牌三角形 {
 	static int[] a=new int[20];
 	static int[] v=new int[20];
 	static int sum=0;
