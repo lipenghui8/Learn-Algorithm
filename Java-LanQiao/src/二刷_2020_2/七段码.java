@@ -3,6 +3,8 @@ package 二刷_2020_2;
 public class 七段码 {
 	static int[] fa=new int[10];
 	static int[][] e=new int[10][10];
+	static int[] use=new int[10];
+	static int ans=0;
 	static void init(){
 		e[1][2] = e[1][6] = 1;
 		e[2][1] = e[2][7] = e[2][3] = 1;
@@ -16,7 +18,7 @@ public class 七段码 {
 		if(fa[i]==i) {
 			return i;
 		}else {
-			return fa[i];
+			return find(fa[i]);
 		}
 	}
 	static void union(int i,int j) {
@@ -24,19 +26,37 @@ public class 七段码 {
 		int y=find(j);
 		fa[x]=y;
 	}
-	static int[] map=new int[7];
-	public static void main(String[] args) {
-		int ans=0;
-		init();
-		for(int i=1;i<=7;i++) {
-			fa[i]=i;
-		}
-		for(int i=1;i<=127;i++) {
-			int temp=i;
-			for(int j=0;j<7;j++) {
-				map[j]=temp%2;
-				temp=temp/2;
+	static void dfs(int x) {
+		if(x>7) {
+			for(int i=1;i<=7;i++) {//对每个节点初始化父节点
+				fa[i]=i;
 			}
+			for(int i=1;i<=7;i++) {
+				for(int j=1;j<=7;j++) {
+					if(e[i][j]==1&&use[i]==1&&use[j]==1) {
+						union(i, j);
+					}
+				}
+			}
+			int k=0;
+			for(int i=1;i<=7;i++) {
+				if(use[i]==1&&find(i)==i) {
+					k++;
+				}
+			}
+			if(k==1) {
+				ans++;
+			}
+			return;
 		}
+		use[x]=1;
+		dfs(x+1);
+		use[x]=0;
+		dfs(x+1);
+	}
+	public static void main(String[] args) {
+		init();
+		dfs(1);
+		System.out.println(ans);
 	}
 }
