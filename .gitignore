@@ -2,6 +2,7 @@
 .settings
 .classpath
 .xlsx
+.txt
 .project
 push.bat
 *.cbp
