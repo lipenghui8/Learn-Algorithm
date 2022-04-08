@@ -3,46 +3,34 @@ package 二刷_t2018;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
-class node{
-	int x,y;
-	node(int x,int y){
-		this.x=x;
-		this.y=y;
-	}
-}
-public class 全球变暖 {
+
+public class 全球变暖_解法二 {
 	static Queue<node> q=new LinkedList<>();
 	static int[] dx= {-1,1,0,0};
 	static int[] dy= {0,0,-1,1};
 	static int cnt=0,n;
-	static int cnty=0;
-	static int flagb=0;
 	static char[][] s=new char[1010][1010];
 	static int[][] v=new int[1010][1010];
 	
 	static void bfs(int px,int py) {
+		int suma=0,sumb=0;
 		node start=new node(px, py);
-		q.add(start);
 		v[px][py]=1;
+		q.add(start);
 		while(!q.isEmpty()) {
 			node sNode=q.peek();
 			q.remove();
 			int xx=sNode.x;
 			int yy=sNode.y;
-			int flag=0;
+			suma++;
 			for(int i=0;i<4;i++) {
 				int x=xx+dx[i];
 				int y=yy+dy[i];
 				if(x>=1&&x<=n&&y>=1&&y<=n&&s[x][y]=='.') {
-					flag=1;
+					sumb++;
 					break;
 				}
 			}
-			if(flag==0&&flagb==1) {
-				cnty++;
-				flagb=0;
-			}
-			
 			for(int i=0;i<4;i++) {
 				int x=xx+dx[i];
 				int y=yy+dy[i];
@@ -51,6 +39,9 @@ public class 全球变暖 {
 					q.add(new node(x, y));
 				}
 			}
+		}
+		if(suma==sumb) {
+			cnt++;
 		}
 	}
 	public static void main(String[] args) {
@@ -66,12 +57,10 @@ public class 全球变暖 {
 		for(int i=1;i<=n;i++) {
 			for(int j=1;j<=n;j++) {
 				if(s[i][j]=='#'&&v[i][j]==0) {
-					flagb=1;
 					bfs(i,j);
-					cnt++;
 				}
 			}
 		}
-		System.out.println(cnt-cnty);
+		System.out.println(cnt);
 	}
 }
