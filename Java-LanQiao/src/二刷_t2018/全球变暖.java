@@ -18,7 +18,8 @@ public class 全球变暖 {
 	static char[][] s=new char[1010][1010];
 	static int[][] v=new int[1010][1010];
 	
-	static void bfs(int px,int py) {
+	static boolean bfs(int px,int py) {
+		int suma=0,sumb=0;
 		node start=new node(px, py);
 		q.add(start);
 		while(!q.isEmpty()) {
@@ -26,6 +27,13 @@ public class 全球变暖 {
 			q.remove();
 			int xx=sNode.x;
 			int yy=sNode.y;
+			suma++;
+			for(int i=0;i<4;i++) {
+				if(s[xx+dx[i]][xx+dy[i]]=='.') {
+					sumb++;
+					break;
+				}
+			}
 			for(int i=0;i<4;i++) {
 				int x=xx+dx[i];
 				int y=yy+dy[i];
@@ -34,6 +42,11 @@ public class 全球变暖 {
 					q.add(new node(x, y));
 				}
 			}
+		}
+		if(suma==sumb) {
+			return true;
+		}else {
+			return false;
 		}
 	}
 	public static void main(String[] args) {
@@ -49,8 +62,9 @@ public class 全球变暖 {
 		for(int i=1;i<=n;i++) {
 			for(int j=1;j<=n;j++) {
 				if(s[i][j]=='#'&&v[i][j]==0) {
-					bfs(i,j);
-					cnt++;
+					if(bfs(i,j)) {
+						cnt++;
+					}
 				}
 			}
 		}
