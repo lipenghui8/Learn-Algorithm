@@ -3,6 +3,7 @@
 .classpath
 .xlsx
 .txt
+.bat
 .project
 push.bat
 *.cbp
