@@ -13,3 +13,6 @@ push.bat
 .vs/
 bin/
 obj/
+.cbp
+.exe
+.o
