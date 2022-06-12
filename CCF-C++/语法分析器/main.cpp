@@ -1,664 +1,433 @@
-// pL/0语言词法分析器
-#include<bits/stdc++.h>
+#include <iostream>
+#include <string>
+#include <iomanip>
+#include <cstring>
+#include <fstream>
+#include <stdio.h>
+#include <cassert>
+#include <vector>
+//#define _CRT_SECURE_NO_WARNINGS
 using namespace std;
+/*
+begin	BEGIN	1
+end		END		2
+if		IF		3
+then	THEN	4
+else	ELSE	5
+while	WHILE	6
+do		DO		7
+标识符	ID		8
+浮点常数UCON	9
+<		LT		10
+<=		LE		11
+==		EQ		12
+<>		NE		13
+>		GT		14
+>=		GE		15
+=		IS		16
++		PL		17
+-		MI		18
+*		MU		19
+/		DI		20
+(		LP		21  新增加的左括号
+)		RP		22  新增加的右括号
+*/
 
-ifstream infile("D:/Test/c.txt");//词法分析的结果或语法分析的输入
-string str;//string变量进行字符识别
-string sym; //指针
 
-void expressionAnalysis();//表达式分析
-void termAnaysis();//项分析
-void factorAnalysis();//因子分析
-int advance();
+const char* table1[] = { " ","begin","end","if","then","else","while","do" };
+const char* table2[] = { " ","BEGIN","END","IF","THEN","ELSE","WHILE","DO","ID","UCON","LT","LE","EQ","NE","GT","GE","IS","PL","MI","MU","DI","LP","RP" };
+char TOKEN[20];//用来依次存放一个单词词文中的各个字符。
+char str[50];//存放词法分析后的表达式，将输入的表达式转变成只含有i和运算符的表达式
+int len = 0;//词法分析后表达式的长度
 
-int conterr=0;//记录错误
-int lpnum=0;//记录左括号
-int found;//提取字符串中指针的位置
-int flag=0;//记录往后移动一个指针SYM是否正确
-string s;//用来保存要分析的字符串
-struct _2tup
+//action表   char vt[8] = { '(',')','+','-','*','/','i','#' };
+string action[16][8] = { {"s4","null","null" ,"null" ,"null","null","s5" , "null" },
+					{"null","null","s6","s7","null","null","null","acc"},
+					{"null","r3","r3","r3","s8","s9","null","r3"} ,
+					{"null","r6","r6","r6","r6","r6","null","r6"},
+					{"s4","null","null","null","null","null","s5","null"},
+					{"null","r8","r8","r8","r8","r8","null","r8"},
+					{"s4","null","null","null","null","null","s5","null"},
+					{"s4","null","null","null","null","null","s5","null"},
+					{"s4","null","null","null","null","null","s5","null"},
+					{"s4","null","null","null","null","null","s5","null"},
+					{"null","s15","s6","s7","null","null","null","null"} ,
+					{"null","r1","r1","r1","s8","s9","null","r1"},
+					{"null","r2","r2","r2","s8","s9","null","r2"} ,
+					{"null","r4","r4","r4","r4","r4","null","r4"} ,
+					{"null","r5","r5","r5","r5","r5","null","r5"} ,
+					{"null","r7","r7","r7","r7","r7","null","r7"} };
+//go表 char vn[3] = { 'E','T','F' };
+int go[16][3] = { {1 , 2 , 3 },
+				{ -1 , -1 , -1 },
+				{ -1 , -1 , -1 } ,
+				{ -1 , -1 , -1 },
+				{ 10 , 2 , 3 },
+				{ -1 , -1 , -1 },
+				{ -1 , 11 , 3 },
+				{ -1 , 12 , 3 },
+				{ -1 , -1 , 13 },
+				{ -1 , -1 , 14 },
+				{ -1 , -1 , -1 } ,
+				{ -1 , -1 , -1 },
+				{ -1 , -1 , -1 } ,
+				{ -1 , -1 , -1 } ,
+				{ -1 , -1 , -1 } ,
+				{ -1 , -1 , -1 } };
+string grammar[9] = { "S->E","E->E+T","E->E-T","E->T","T->T*F","T->T/F","T->F","F->(E)","F->i" };//存放文法表达式
+int grammarlength[9] = { 4,6,6,4,6,6,4,6,4 };//每个文法表达式的长度
+char grammarleft[9] = { 'S','E','E','E','T','T','T','F','F' };//文法表达式的左部
+string grammarright[9] = { "E","E+T","E-T","T","T*F","T/F","F","(E)","i" };//文法表达式的右部
+int grammarrightlength[9] = { 1,3,3,1,3,3,1,3,1 };//文法表达式右部长度
+
+int lookup(char a[])/*每调用一次，就以 TOKEN 中的字符串查保留字表，若查到，就将相应关键字的类别码赋给整型变量 c；否则将 c 置为零。*/
 {
-    string token;
-    int id;
-};
+	int i;
+	for (i = 1; i <= 7; i++)
+	{
+		if (strcmp(a, table1[i]) == 0)return i;
+	}
+	if (i == 8)
+	{
+		return 0;
+	}
 
-int advance(){//SYM的移动
-    if(!getline(infile,str)){//从文件中提取字符
-        return 0;
-    }
-    found=str.find(',',0);
-    if(found==-1){//当为error的时候，没有‘，’
-        conterr++;
-        cout<<"语法错误 识别字符错误"<<endl;
-        return -1;
-    }
-    sym=str.substr(1,found-1);
-    //cout<<sym<<endl;
-    return 1;
 }
-
-void factorAnalysis(){//识别分析标识符
-    if(sym=="29"||sym=="28"){//如果是标识符和无符号整数，指针就往后移动
-        flag=advance();
-        if(conterr){
-            return;
-        }
-        if(lpnum==0&&sym=="22"){//
-            conterr++;
-            cout<<"语法错误 ')'不匹配"<<endl;
-            return;
-        }
-    }
-    else if(sym=="21"){//如果是左括号，就要接下来判断是否为表达式，指针往后移动
-        lpnum++;
-      //  cout<<lpnum<<endl;
-        flag=advance();
-        if(conterr){
-            return;
-        }
-        if(flag==0){//当为最后一个标志的时候，若没有右括号匹配就错误
-            conterr++;
-            cout<<"语法错误 '('后缺少表达式"<<endl;
-            return;
-        }
-        expressionAnalysis();
-        if(conterr){
-            return;
-        }
-        if(flag==0||sym!="22"){
-            conterr++;
-            cout<<"语法错误 表达式后面缺少')'"<<endl;
-            return;
-        }else{
-            lpnum--;
-            flag=advance();
-            if(conterr){
-                return;
-            }
-            if(flag==0){
-                return;
-            }
-        }
-    }else{
-        cout<<"语法错误 因子首部不为<标识符>|| <无符号整数> ||'('"<<endl;
-        conterr++;
-        return;
-    }
-    return;
-}
-
-void termAnalysis(){//识别分析乘除符号
-    factorAnalysis();
-    if(conterr){
-        return;
-    }
-    while((sym=="14")||(sym=="15")){//当为'*'或'/'的时候，一直往后识别因子并循环
-        flag=advance();
-        if(conterr){
-            return;
-        }
-        if(flag==0){
-            conterr++;
-            cout<<"语法错误 <乘除法运算符>后缺因子"<<endl;
-            return;
-        }
-        if(conterr){
-            return;
-        }
-        factorAnalysis();
-        if(conterr){
-            return;
-        }
-    }
-    return;
-};
-
-void expressionAnalysis(){//识别分析加减符号
-    if(conterr){
-        return;
-    }
-    if((sym=="12")||(sym=="13")){//当为'+'或'-'的时候
-        flag=advance();
-        if(!conterr){
-            return;
-        }
-        if(flag==0){
-            cout<<"语法错误 <加减法运算符>后缺项"<<endl;
-            conterr++;
-            return;
-        }
-    }
-    termAnalysis();
-    if(conterr){
-        return;
-    }
-    while((sym=="12")||(sym=="13")){//当为'+'或'-'的时候，一直往后识别项并循环
-        flag=advance();
-        if(conterr){
-            return;
-        }
-        if(flag==0){
-            cout<<"语法错误 <加法运算符>后缺项"<<endl;
-            conterr++;
-            return;
-        }
-        termAnalysis();
-        if(conterr){
-            return;
-        }
-    }
-    return;
-}
-
-bool is_blank(char ch)
+void out(int a, const char b[])
+/*一般仅在进入终态时调用此函数，调用的形式为 OUT(c，VAL)。
+其中，实参 c 为相应单词的类别码助记符；实参 VAL 为 TOKEN（即词文）或为空串。
+函数 OUT 的功能是，在送出一个单词的内部表示之后，返回到调用该词法分析程序的那个程序。*/
 {
-    return ch == ' ' || ch == '    ';//空格或控制字符
+	ofstream fout("E:\\AAAtest\\result.txt", fstream::app);
+	char temp = ' ';
+	if (a == 8 || a == 9)
+	{
+		fout << "（" << table2[a] << " ，" << b << "）" << endl;
+	}
+	else
+	{
+		fout << "（" << table2[a] << " ，" << temp << "）" << endl;
+	}
+
+	fout.close();
 }
-bool gofor(char& ch, string::size_type& pos, const string& prog)//返回指定位置的字符
+
+void report_error(void)//返回错误
 {
-    ++pos;
-    if (pos >= prog.size())
-    {
-        return false;
-    }
-    else
-    {
-        ch = prog[pos];
-        return true;
-    }
+	ofstream fout("E:\\AAAtest\\result.txt", fstream::app);
+	fout << "输入不合规范！";
+	fout.close();
+	return;
 }
-
-_2tup scanner(const string& prog, string::size_type& pos, const map<string, int>& keys, int& row)
+void scanner_example(FILE* fp)
 {
-    /*
-    if
-        标示符
-    else if
-        数字
-    else
-        符号
-    */
-    _2tup ret;
-    string token;
-    int id = 0;
+	char ch;
+	int i, c, flag = 0;;
+	//ch = fgetc(fp);
+	while ((ch = fgetc(fp)) != EOF)
+	{
+		if (ch == ' ')ch = fgetc(fp);
+		if (ch == '\n')ch = fgetc(fp);
+		if (ch == '#')break;
+		if (isalpha(ch)) //判断字符是否为字母，识别标识符和关键字
+		{
+			TOKEN[0] = ch; ch = fgetc(fp); i = 1;
+			while (isalnum(ch))//检查所传的字符是否是字母和数字
+			{
+				TOKEN[i] = ch; i++;
+				ch = fgetc(fp);
+			}
+			TOKEN[i] = '\0';//结束符
+			fseek(fp, -1, 1); //从文件当前位置后退一个字符
+			c = lookup(TOKEN);//查找在第二个表中的位置，如果是关键字返回下标，标识符返回0
+			if (c == 0)
+			{
+				out(8, TOKEN);//识别标识符
+				str[len] = 'i';
+				len++;
+			}
+			else out(c, TOKEN);//识别关键字
+		}
+		else if (isdigit(ch))//判断字符是否为数字字符
+		{
+			TOKEN[0] = ch; ch = fgetc(fp); i = 1;
+			while (isdigit(ch) || ch == '.')
+			{
+				if (ch == '.')
+				{
+					if (flag == 0)
+					{
+						flag = 1;
+						TOKEN[i] = ch; i++;
+					}
+					else report_error();
+				}
+				else
+				{
+					TOKEN[i] = ch; i++;
 
-    char ch;
-    ch = prog[pos];
+				}
+				ch = fgetc(fp);
+			}
+			TOKEN[i] = '\0';
+			fseek(fp, -1, 1);
+			out(9, TOKEN);//识别数字
+			str[len] = 'i';
+			len++;
+		}
+		else
+			switch (ch)
+			{
+			case '<': ch = fgetc(fp);
+				if (ch == '=')out(11, TOKEN);//<=
+				else if (ch == '>') out(13, TOKEN);//<>
+				else
+				{
+					fseek(fp, -1, 1);
+					out(10, TOKEN);//<
+				}
+				break;
+			case '=': ch = fgetc(fp);
+				if (ch == '=')out(12, TOKEN);//==
+				else
+				{
+					fseek(fp, -1, 1);
+					out(16, TOKEN);//=
+				}
+				break;
+			case '>': ch = fgetc(fp);
+				if (ch == '=')out(15, TOKEN);//>=
+				else
+				{
+					fseek(fp, -1, 1);
+					out(14, TOKEN);//>
+				}
+				break;
+			case '+':
+			{
+				out(17, TOKEN);
+				str[len] = '+';
+				len++;
+				break;
+			}
+			case '-':
+			{
+				out(18, TOKEN);
+				str[len] = '-';
+				len++;
+				break;
+			}
 
-    while(is_blank(ch))
-    {
-        ++pos;
-        ch = prog[pos];
-    }
-    // 判断标示符、关键字
-    if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '_')
-    {
-        //保证读取一个单词
-        while((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '_')
-        {
-            token += ch;//追加标示符、关键字
-            if (!gofor(ch, pos, prog))
-            {
-                break;
-            }
-        }
-        // 这里先看做都是其他标示符
-        id = keys.size();
+			case '*':
+			{
+				out(19, TOKEN);
+				str[len] = '*';
+				len++;
+				break;
+			}
+			case '/':
+			{
+				out(20, TOKEN);
+				str[len] = '/';
+				len++;
+				break;
+			}
+			case '('://新增识别左括号
+			{
+				out(21, TOKEN);
+				str[len] = '(';
+				len++;
+				break;
+			}
+			case ')'://新增识别右括号
+			{
+				out(22, TOKEN);
+				str[len] = ')';
+				len++;
+				break;
+			}
+			default: report_error(); break;
+			}
 
-        // 验证是否是关键字
-        map<string, int>::const_iterator cit = keys.find(token);//根据string类型的token返回int类型的id赋值给cit
-        if (cit != keys.end())
-        {
-            id = cit->second;//此时是关键字，记录他的id
-        }
-    }
-    // 识别常数
-    else if ((ch >= '0' && ch <= '9') || ch == '.')
-    {
-        while (ch >= '0' && ch <= '9' || ch == '.')
-        {
-            token += ch;
-            if (!gofor(ch, pos, prog))
-            {
-                break;
-            }
-        }
-        id = keys.size() - 1;
-        int dot_num = 0;
-        for (string::size_type i = 0; i != token.size(); ++i)
-        {
-            if (token[i] == '.')
-            {
-                ++dot_num;
-            }
-        }
-        if (dot_num > 1)
-        {
-            id = -1;
-        }
-    }
-    else
-    {
-        map<string, int>::const_iterator cit;
-        switch (ch)
-        {
-        case '-': // - 操作符
-            token += ch;
-            if (gofor(ch, pos, prog))
-            {
-                if (ch == '-' || ch == '=' || ch == '>') // -- 操作符
-                {
-                    token += ch;
-                    gofor(ch, pos, prog);
-                }
-            }
-            cit = keys.find(token);
-            if (cit != keys.end())
-            {
-                id = cit->second;
-            }
-            break;
-        case ':':
-             token += ch;
-            if (gofor(ch, pos, prog))
-            {
-                if (ch == '=') // -- 操作符
-                {
-                    token += ch;
-                    gofor(ch, pos, prog);
-                }
-            }
-            cit = keys.find(token);
-            if (cit != keys.end())
-            {
-                id = cit->second;
-            }
-            break;
-
-        case '=':
-            token += ch;
-            if (gofor(ch, pos, prog))
-            {
-                if (ch == '=') // !% %= 操作符
-                {
-                    token += ch;
-                    gofor(ch, pos, prog);
-                }
-            }
-            cit = keys.find(token);
-            if (cit != keys.end())
-            {
-                id = cit->second;
-            }
-            break;
-
-        case '/': // / 操作符
-            token += ch;
-            if (gofor(ch, pos, prog))
-            {
-                if (ch == '=') // /= 操作符
-                {
-                    token += ch;
-                    gofor(ch, pos, prog);
-                }
-                else if (ch == '/') // 单行注释
-                {
-                    token += ch;
-                    ++pos;
-                    while (pos < prog.size())
-                    {
-                        ch = prog[pos];
-                        if (ch == '\n')
-                        {
-                            break;
-                        }
-                        token += ch;
-                        ++pos;
-                    }
-                    if (pos >= prog.size())
-                    {
-                        ;
-                    }
-                    else
-                    {
-                        ;
-                    }
-                    id = keys.size() - 2;
-                    break;
-                }
-                else if (ch == '*') // 注释
-                {
-                    token += ch;
-                    if (!gofor(ch, pos, prog))
-                    {
-                        token += "\n!!!注释错误!!!";
-                        id = -10;
-                        break;
-                    }
-                    if (pos + 1 >= prog.size())
-                    {
-                        token += ch;
-                        token += "\n!!!注释错误!!!";
-                        id = -10;
-                        break;
-                    }
-                    char xh = prog[pos + 1];
-                    while (ch != '*' || xh != '/')
-                    {
-                        token += ch;
-                        if (ch == '\n')
-                        {
-                            ++row;
-                        }
-                        //++pos;
-                        if (!gofor(ch, pos, prog))
-                        {
-                            token += "\n!!!注释错误!!!";
-                            id = -10;
-                            ret.token = token;
-                            ret.id    = id;
-                            return ret;
-                        }
-                        //ch = prog[pos];
-                        if (pos + 1 >= prog.size())
-                        {
-                            token += ch;
-                            token += "\n!!!注释错误!!!";
-                            id = -10;
-                            ret.token = token;
-                            ret.id    = id;
-                            return ret;
-                        }
-                        xh = prog[pos + 1];
-                    }
-                    token += ch;
-                    token += xh;
-                    pos += 2;
-                    ch = prog[pos];
-                    id = keys.size() - 2;
-                    break;
-                }
-            }
-            cit = keys.find(token);
-            if (cit != keys.end())
-            {
-                id = cit->second;
-            }
-            break;
-        case '+':
-            token += ch;
-            cit = keys.find(token);
-            if (cit != keys.end())
-            {
-                id = cit->second;
-            }
-            gofor(ch, pos, prog);
-            break;
-
-        case '<':
-            token += ch;
-            if (gofor(ch, pos, prog))
-            {
-                if (ch == '<')
-                {
-                    token += ch;
-                    if (gofor(ch, pos, prog))
-                    {
-                        if (ch == '=')
-                        {
-                            token += ch;
-                            gofor(ch, pos, prog);
-                        }
-                    }
-                }
-                else if (ch == '=')
-                {
-                    token += ch;
-                    gofor(ch, pos, prog);
-                }
-            }
-            cit = keys.find(token);
-            if (cit != keys.end())
-            {
-                id = cit->second;
-            }
-            break;
-
-        case '>':
-            token += ch;
-            if (gofor(ch, pos, prog))
-            {
-                if (ch == '>')
-                {
-                    token += ch;
-                    if (gofor(ch, pos, prog))
-                    {
-                        if (ch == '=')
-                        {
-                            token += ch;
-                            gofor(ch, pos, prog);
-                        }
-                    }
-                }
-                else if (ch == '=')
-                {
-                    token += ch;
-                    gofor(ch, pos, prog);
-                }
-            }
-            cit = keys.find(token);
-            if (cit != keys.end())
-            {
-                id = cit->second;
-            }
-            break;
-         case '(': // / 操作符
-            token += ch;
-            if (gofor(ch, pos, prog))
-
-            {
-                 if (ch == '*') // 注释
-                {
-                    token += ch;
-                    if (!gofor(ch, pos, prog))
-                    {
-                        token += "\n!!!注释错误!!!";
-                        id = -10;
-                        break;
-                    }
-                    if (pos + 1 >= prog.size())
-                    {
-                        token += ch;
-                        token += "\n!!!注释错误!!!";
-                        id = -10;
-                        break;
-                    }
-                    char xh = prog[pos + 1];
-                    while (ch != '*' || xh != ')')
-                    {
-                        token += ch;
-                        if (ch == '\n')
-                        {
-                            ++row;
-                        }
-                        //++pos;
-                        if (!gofor(ch, pos, prog))
-                        {
-                            token += "\n!!!注释错误!!!";
-                            id = -10;
-                            ret.token = token;
-                            ret.id    = id;
-                            return ret;
-                        }
-                        //ch = prog[pos];
-                        if (pos + 1 >= prog.size())
-                        {
-                            token += ch;
-                            token += "\n!!!注释错误!!!";
-                            id = -10;
-                            ret.token = token;
-                            ret.id    = id;
-                            return ret;
-                        }
-                        xh = prog[pos + 1];
-                    }
-                    token += ch;
-                    token += xh;
-                    pos += 2;
-                    ch = prog[pos];
-                    id = keys.size() - 2;
-                    break;
-                }
-            }
-            cit = keys.find(token);
-            if (cit != keys.end())
-            {
-                id = cit->second;
-            }
-            break;
-
-        case '*':
-            token += ch;
-            cit = keys.find(token);
-            if (cit != keys.end())
-            {
-                id = cit->second;
-            }
-             gofor(ch, pos, prog);
-            break;
-
-        case ',':
-        case ')':
-        case '#':
-        case '.':
-        case ';':
-            token += ch;
-            gofor(ch, pos, prog);
-            //++pos;
-            //ch = prog[pos];
-            cit = keys.find(token);
-            if (cit != keys.end())
-            {
-                id = cit->second;
-            }
-            break;
-
-        case '\n':
-            token += "换行";
-            ++pos;
-            ch = prog[pos];
-            id = -2;
-            break;
-        default:
-            token += "错误";
-            ++pos;
-            ch = prog[pos];
-            id = -1;
-            break;
-        }
-    }
-    ret.token = token;
-    ret.id    = id;
-
-    return ret;
+	}
+	return;
 }
 
-void init_keys(const string& file, map<string, int>& keys)//读取单词符号和种别码
-{
-    ifstream fin(file.c_str());//.c_str返回的是当前字符串的首地址
-    if (!fin)
-    {
-        cerr << file << " doesn't exist!" << endl;//cerr不经过缓冲而直接输出,一般用于迅速输出出错信息
-      //  exit(1);
-    }
-    keys.clear();//清空map对象里面的内容
-    string line;
-    string key;
-    int id;
-    while (getline(fin, line))//这个函数接收两个参数：一个输入流对象和一个string对象，getline函数从输入流的下一行读取，并保存读取的内容到string中
-    {
-        istringstream sin(line);//istringstream sin(s);定义一个字符串输入流的对象sin,并调用sin的复制构造函数，将line中所包含的字符串放入sin 对象中！
-        sin >> key >> id;//读取里面的字符串每一行一个key id
-        keys[key] = id;
-    }
-}
-
-void read_prog(const string& file, string& prog){//读取代码，并追加到prog上
-    ifstream fin(file.c_str());
-    if (!fin)
-    {
-        cerr << file << " error!" << endl;
-      //  exit(2);
-    }
-    prog.clear();
-    string line;
-    while (getline(fin, line))
-    {
-        prog += line + '\n';
-    }
-}
-
-void cifafenxi()
-{
-    map<string, int> keys;
-    init_keys("D:/Test/a.txt", keys);
-
-    string prog;
-    cin>>prog;
-    //read_prog("D:/Test/b.txt", prog);
-
-    vector< _2tup > tups;
-    string token, id;
-
-    string::size_type pos = 0;//size_type属于string标准库，作用可看做相当于unsigned·int
-    int row  = 1;
-
-    _2tup tu;
-    int no = 0;
-    freopen("D:/Test/c.txt","w",stdout);
-    do
-    {
-        tu = scanner(prog, pos, keys, row);
-
-        switch (tu.id)
-        {
-        case -1://返回的是错误
-            ++no;
-            cout << no << ": ";
-            cout << "Error in row" << row << "!" << '<' << tu.token<< "," << tu.id << '>' << endl;
-            tups.push_back(tu);
-            break;
-        case -2:
-            ++row;
-            // cout << '<' << tu.token<< "," << tu.id << '>' << endl;
-            break;
-        default:
-
-                s=prog;
-                cout << '(' << tu.id<< "," << tu.token << ')' << endl;
-
-            tups.push_back(tu);
-            break;
-        }
-    } while (pos < prog.size());
-
-}
-
-yufafenxi()//语法分析
-{
-    freopen("CON", "w", stdout);//结果在控制台上输出
-     flag=advance();
-    if(flag){
-        expressionAnalysis();
-    }
-    if(flag!=-1&&!conterr){
-        cout<<"正确："<<s<<endl;
-    }
-
-}
 int main()
 {
-    cifafenxi();
-    yufafenxi();
-    return 0;
+	cout << "请输入要分析的表达式：" << endl;
+	char strr[50];
+	int i = 0;//输入表达式的长度
+	ofstream out1("E:\\AAAtest\\test.txt");
+	out1.close();
+	ofstream out("E:\\AAAtest\\test.txt", ios::out);
+	while (true)//将表达式存入文件test
+	{
+		cin >> strr[i];
+		out << strr[i];
+		if (strr[i] == '#')break;
+		i++;
+	}
+	out.close();
+	FILE* fp1;
+	FILE* fp2;
+	fp2 = fopen("E:\\AAAtest\\result.txt", "w");
+	fclose(fp2);
+	fp1 = fopen("E:\\AAAtest\\test.txt", "r");
+	if (!fp1)
+	{
+		printf("打开文件失败！");
+	}
+	scanner_example(fp1);//对test文件中的内容进行词法分析，存入result文件
+
+	string temp;
+	cout << endl;
+	cout << "词法分析结果为：" << endl;
+	ifstream myfile2("E:\\AAAtest\\result.txt", ios::in);
+	if (!myfile2.is_open())
+	{
+		cout << "未成功打开文件" << endl;
+	}
+	while (getline(myfile2, temp))//输出rusult文件中的内容
+	{
+		cout << temp << endl;
+	}
+	myfile2.close();
+
+	str[len] = '#';
+	cout << endl;
+	cout << "词法分析后表达式为：" << endl;
+	for (int i = 0; i <= len; i++)
+	{
+		cout << str[i];
+	}
+	cout << endl;
+	cout << endl;
+	cout << "语法分析结果为：" << endl;
+
+	int count;//步骤
+	int state[100], stateIndex;//状态串及下标
+	state[0] = 0; stateIndex = 0;//初始化状态串
+	char inSymbol[100], outSymbol[100];//栈中符号串  余留符号串
+	inSymbol[0] = '#';//初始化
+	int inSymbolIndex = 0, outSymbolIndex = 0;
+	string analysis;//分析动作
+	for (int i = 0; i <= len; i++)
+	{
+		outSymbol[i] = str[i];
+	}
+	cout << "字符串长度为：" << len << endl;
+	cout << "步骤" << "\t" << "状态" << "\t\t";
+	cout << "栈中符号串" << "\t\t" << "余留符号串" << "\t\t";
+	cout << "分析动作" << "\t\n";
+	for (count = 1;;)
+	{
+		cout << count << fixed << setprecision(3) << "\t";
+		for (int i = 0; i <= stateIndex; i++)//输出状态串
+		{
+			cout << state[i] << " " << fixed << setprecision(4);
+		}
+		cout << "\t\t";
+		for (int i = 0; i <= inSymbolIndex; i++)//输出栈中符号串
+		{
+			cout << inSymbol[i] << " " << fixed << setprecision(4);
+		}
+		cout << "\t\t";
+		for (int i = outSymbolIndex; i <= len; i++)//输出余留符号串
+		{
+			cout << outSymbol[i] << " " << fixed << setprecision(4);
+		}
+		cout << "\t\t";
+
+
+		int row = state[stateIndex], column;//根据状态串和余留符号串查action表
+		if (outSymbol[outSymbolIndex] == '(')column = 0;
+		else if (outSymbol[outSymbolIndex] == ')')column = 1;
+		else if (outSymbol[outSymbolIndex] == '+')column = 2;
+		else if (outSymbol[outSymbolIndex] == '-')column = 3;
+		else if (outSymbol[outSymbolIndex] == '*')column = 4;
+		else if (outSymbol[outSymbolIndex] == '/')column = 5;
+		else if (outSymbol[outSymbolIndex] == 'i')column = 6;
+		else if (outSymbol[outSymbolIndex] == '#')column = 7;
+
+
+		if (action[row][column] == "null")
+		{
+			cout << "error!" << endl;
+			break;
+		}
+		else//查表不为空
+		{
+			analysis = action[row][column];
+			cout << analysis << "\t";//输出分析动作
+			if (analysis[0] == 's')//查到以s开头的分析动作
+			{
+				cout << endl;
+				stateIndex++;
+				if (analysis.length() == 3)
+				{
+					state[stateIndex] = ((int)(analysis[1]) - 48) * 10 + ((int)(analysis[2]) - 48);
+				}
+				else state[stateIndex] = (int)analysis[1] - 48;
+				inSymbolIndex++;
+				inSymbol[inSymbolIndex] = outSymbol[outSymbolIndex];
+				outSymbolIndex++;
+				count++;
+			}
+			else if (analysis[0] == 'r')//查到以r开头的分析动作
+			{
+				int temp = (int)analysis[1] - 48;
+				cout << grammar[temp] << endl;
+				stateIndex = stateIndex - grammarrightlength[temp];
+				inSymbolIndex = inSymbolIndex + 1 - grammarrightlength[temp];
+				inSymbol[inSymbolIndex] = grammarleft[temp];
+				cout << " " << fixed << setprecision(3) << "\t";
+				for (int i = 0; i <= stateIndex; i++)//输出状态串
+				{
+					cout << state[i] << " " << fixed << setprecision(4);
+				}
+				cout << "\t\t";
+				for (int i = 0; i <= inSymbolIndex; i++)//栈中符号串
+				{
+					cout << inSymbol[i] << " " << fixed << setprecision(4);
+				}
+				cout << "\t\t";
+				for (int i = outSymbolIndex; i <= len; i++)//余留符号串
+				{
+					cout << outSymbol[i] << " " << fixed << setprecision(4);
+				}
+				cout << "\t\t";
+
+
+				int row2 = state[stateIndex], column2;//根据状态串和栈中符号串查go表
+				if (inSymbol[inSymbolIndex] == 'E')column2 = 0;
+				else if (inSymbol[inSymbolIndex] == 'T')column2 = 1;
+				else if (inSymbol[inSymbolIndex] == 'F')column2 = 2;
+
+				if (go[row2][column2] == -1)
+				{
+					cout << "error!" << endl;
+					break;
+				}
+				else//不为空，输出
+				{
+					cout << "go[" << row2 << "," << column2 << "]=" << go[row2][column2] << endl;
+					stateIndex++;
+					state[stateIndex] = go[row2][column2];
+					count++;
+				}
+			}
+			else if (analysis == "acc")
+			{
+				cout << endl << "分析成功！";
+				break;
+			}
+
+		}
+	}
+
+	fclose(fp1);
+	fclose(fp2);
+	return 0;
 }
+
