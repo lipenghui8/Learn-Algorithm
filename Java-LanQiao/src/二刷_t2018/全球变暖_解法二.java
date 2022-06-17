@@ -3,7 +3,13 @@ package 二刷_t2018;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
-
+class node{
+	int x,y;
+	node(int x,int y){
+		this.x=x;
+		this.y=y;
+	}
+}
 public class 全球变暖_解法二 {
 	static Queue<node> q=new LinkedList<>();
 	static int[] dx= {-1,1,0,0};
