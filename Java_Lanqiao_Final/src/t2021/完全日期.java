@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class 完全日期 {
 	public static void main(String[] args) throws ParseException {
-		SimpleDateFormat sdf=new SimpleDateFormat("yyyy/mm/dd");
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd");
 		Date date=sdf.parse("2001/01/01");
 		Calendar calendar=Calendar.getInstance();
 		calendar.setTime(date);
