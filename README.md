@@ -1,6 +1,6 @@
 ## 1、0-1背包问题(dp)
 
-<img src="https://gitee.com/lipenghuihenu/picgo-image/raw/master/image-20220307094557633.png" alt="image-20220307094557633" style="zoom: 50%;" />
+<img src="./assets/image-20220307094557633.png" alt="image-20220307094557633" style="zoom: 50%;" />
 
 ``` java
 public class beibao01 {
@@ -25,7 +25,7 @@ public class beibao01 {
 
 ## 2、杨辉三角(递归)
 
-<img src="https://gitee.com/lipenghuihenu/picgo-image/raw/master/image-20220307104949498.png" alt="image-20220307104949498" style="zoom: 50%;" />
+<img src="./assets/image-20220307104949498.png" alt="image-20220307104949498" style="zoom: 50%;" />
 
 ``` java
 public class yanhui {
@@ -44,13 +44,13 @@ public class yanhui {
 
 ## 3、渡河问题（贪心）
 
-<img src="https://gitee.com/lipenghuihenu/picgo-image/raw/master/image-20220307112739798.png" alt="image-20220307112739798" style="zoom: 67%;" />
+<img src="./assets/image-20220307112739798.png" alt="image-20220307112739798" style="zoom: 67%;" />
 
-<img src="https://gitee.com/lipenghuihenu/picgo-image/raw/master/image-20220307112804448.png" alt="image-20220307112804448" style="zoom: 67%;" />
+<img src="./assets/image-20220307112804448.png" alt="image-20220307112804448" style="zoom: 67%;" />
 
 ## 4、DFS
 
-![image-20220307224220579](https://gitee.com/lipenghuihenu/picgo-image/raw/master/image-20220307224220579.png)
+![image-20220307224220579](./assets/image-20220307224220579.png)
 
 #### 4.1 简单全排列
 
@@ -250,17 +250,17 @@ public class mubanbingjie {
 
 ### 5.1 二维差分
 
-<img src="https://gitee.com/lipenghuihenu/picgo-image/raw/master/image-20220318195125437.png" alt="image-20220318195125437" style="zoom: 67%;" />
+<img src="./assets/image-20220318195125437.png" alt="image-20220318195125437" style="zoom: 67%;" />
 
-<img src="https://gitee.com/lipenghuihenu/picgo-image/raw/master/image-20220318195138772.png" alt="image-20220318195138772" style="zoom:67%;" />
+<img src="./assets/image-20220318195138772.png" alt="image-20220318195138772" style="zoom:67%;" />
 
 ## 6、BFS（常用于最短路径和求连通块问题）
 
-<img src="https://gitee.com/lipenghuihenu/picgo-image/raw/master/image-20220323211519312.png" style="zoom:67%;" />
+<img src="./assets/image-20220323211519312.png" style="zoom:67%;" />
 
 BFS代码框架：
 
-<img src="https://gitee.com/lipenghuihenu/picgo-image/raw/master/image-20220324193614332.png" alt="image-20220324193614332" style="zoom:67%;" />
+<img src="./assets/image-20220324193614332.png" alt="image-20220324193614332" style="zoom:67%;" />
 
 ``` cpp
 package t2019;
