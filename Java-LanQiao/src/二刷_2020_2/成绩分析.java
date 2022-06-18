@@ -21,6 +21,7 @@ public class 成绩分析 {
 		}
 		System.out.println(max);
 		System.out.println(min);
-		System.out.printf("%.2f",(double)Math.round(sum*1.0/n*100)/100);
+//		System.out.printf("%.2f",(double)Math.round(sum*1.0/n*100)/100);
+		System.out.printf("%.2f",sum*1.0/n);
 	}
 }
