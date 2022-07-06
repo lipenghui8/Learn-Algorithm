@@ -66,6 +66,5 @@ int main()
     sort(t,t+5);
     reverse(t,t+5);
 
-
     return 0;
 }
