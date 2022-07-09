@@ -22,3 +22,6 @@ obj/
 .sln
 .vs
 Debug
+.vcxproj.filters
+.vcxproj.user
+.vcxproj
