@@ -16,3 +16,9 @@ obj/
 .cbp
 .exe
 .o
+.user
+.vcxproj
+.filters
+.sln
+.vs
+Debug
