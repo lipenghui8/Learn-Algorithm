@@ -5,22 +5,19 @@ struct nn
 {
     int k;
     vector<int> r;
-}node[100005];
-int v[100005];
-void dfs(nn nnode,int x) {
+}node[100010];
+int v[100010];
+void dfs(nn nnode) {
     cout << nnode.k << " ";
-    if (nnode.r.size() == 0) {
-        return;
-    }
     for (int i = 0; i < nnode.r.size(); i++) {
         if (v[nnode.r[i]] == 0) {
             v[nnode.r[i]] = 1;
-            x = x + 1;
-            dfs(node[nnode.r[i]], x);
+            dfs(node[nnode.r[i]]);
         }
     }
 }
 void bfs(nn snode) {
+    memset(v, 0, sizeof(v));
     queue<nn> q;
     q.push(snode);
     v[1] = 1;
@@ -51,9 +48,8 @@ int main()
         sort(node[n].r.begin(), node[n].r.end());
     }
     v[1] = 1;
-    dfs(node[1], 1);
+    dfs(node[1]);
     cout << endl;
-    memset(v, 0,sizeof(v));
     bfs(node[1]);
     return 0;
 }
