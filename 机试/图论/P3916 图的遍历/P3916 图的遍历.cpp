@@ -2,33 +2,21 @@
 using namespace std;
 int n, m;
 vector<int> s[100010];
-int v[100010];
 int res[100010];
-void bfs(int x) {
+
+void bfs(int x,int k) {
     queue<int> q;
-    vector<int> tle;
     q.push(x);
-    tle.push_back(x);
-    int maxx = 0;
-    memset(v, 0, sizeof(v));
-    v[x] = 1;
     while (!q.empty()) {
         int xx = q.front();
+        res[xx] = k;
         q.pop();
-        if (xx > maxx) {
-            maxx = xx;
-            tle.push_back(t);
-        }
         for (int i = 0; i < s[xx].size(); i++) {
             int t = s[xx][i];
-            if (v[t] == 0) {
-                v[t] = 1;
+            if (res[t] == 0) {
                 q.push(t);
             }
         }
-    }
-    for (int i = 0; i < tle.size(); i++) {
-        res[tle[i]] = maxx;
     }
 }
 int main()
@@ -37,11 +25,11 @@ int main()
     for (int i = 1; i <= m; i++) {
         int a, b;
         cin >> a >> b;
-        s[a].push_back(b);
+        s[b].push_back(a);
     }
-    for (int i = 1; i <= n; i++) {
+    for (int i = n; i; i--) {
         if (res[i] == 0) {
-            bfs(i);
+            bfs(i, i);
         }
     }
     for (int i = 1; i <=n; i++) {
