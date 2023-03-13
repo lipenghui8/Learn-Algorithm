@@ -1,6 +1,7 @@
 .metadata
 .settings
 /cmake-build-debug
+CMakeLists.txt
 .classpath
 .idea
 /AResource
