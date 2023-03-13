@@ -54,7 +54,52 @@
 //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
     public String reverseWords(String s) {
+        StringBuilder sb=removeExtraSpace(s);
+        reverseString(sb,0,sb.length()-1);
+        reverseEachWord(sb);
+        return sb.toString();
+    }
+    StringBuilder removeExtraSpace(String s){
+        int start=0,end=s.length()-1;
+        StringBuilder sb=new StringBuilder();
+        while(s.charAt(start)==' '){
+            start++;
+        }
+        while (s.charAt(end)==' '){
+            end--;
+        }
+        while(start<=end){
+            char c=s.charAt(start);
+            if(c!=' '||s.charAt(start-1)!=' '){
+                sb.append(c);
+            }
+            start++;
+        }
+        return sb;
+    }
 
+    void reverseString(StringBuilder sb,int start,int end){
+        while (start<end){
+            char temp=sb.charAt(start);
+            sb.setCharAt(start, sb.charAt(end));
+            sb.setCharAt(end,temp);
+            start++;
+            end--;
+        }
+    }
+
+    void reverseEachWord(StringBuilder sb){
+        int start=0;
+        int end=1;
+        int n=sb.length();
+        while (start<n){
+            while (end<n&&sb.charAt(end)!=' '){
+                end++;
+            }
+            reverseString(sb,start,end-1);
+            start=end+1;
+            end=start+1;
+        }
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
