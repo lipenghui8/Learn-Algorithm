@@ -1,13 +1,9 @@
 "D:\Program Files\JetBrains\CLion 2022.2.4\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=D:/Program Files/JetBrains/CLion 2022.2.4/bin/ninja/win/ninja.exe" -G Ninja -S C:\Users\86155\eclipse-workspace\leetcode -B C:\Users\86155\eclipse-workspace\leetcode\cmake-build-debug
--- Configuring done
-CMake Error at CMakeLists.txt:6 (add_executable):
-  Cannot find source file:
-
-    editor/cn/[27]�Ƴ�Ԫ��.cpp
-
-
-CMake Error at CMakeLists.txt:6 (add_executable):
-  No SOURCES given to target: leetcode
+CMake Error at CMakeLists.txt:7 (add_executable):
+  The target name "[344]reverse-string" is reserved or not valid for certain
+  CMake features, such as generator expressions, and may result in undefined
+  behavior.
 
 
-CMake Generate step failed.  Build files cannot be regenerated correctly.
+-- Configuring incomplete, errors occurred!
+See also "C:/Users/86155/eclipse-workspace/leetcode/cmake-build-debug/CMakeFiles/CMakeOutput.log".

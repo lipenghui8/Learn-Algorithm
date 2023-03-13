@@ -3,5 +3,5 @@ project(leetcode)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(leetcode
-        editor/cn/[27]�Ƴ�Ԫ��.cpp)
+
+add_executable([344]reverse-string editor/cn/[344]reverse-string.cpp)
